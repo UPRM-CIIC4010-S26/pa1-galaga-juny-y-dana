@@ -35,7 +35,15 @@ void Program::Update() {
     pauseFrames = std::max(pauseFrames - 1, 0);
 
     if (!startup && !paused && !gameOver && pauseFrames <= 0) {
-        Enemy::ManageEnemies(player->hitBox);
+        score += Enemy::ManageEnemies(player->hitBox);
+
+        if (score >= sumLife && lives < 5) {
+        lives++;
+        sumLife += 1000;
+        }
+        
+        respawnCooldown = std::max(1080 - score / 5, 200);
+
         StdEnemy::attackReset();
         ManageEnemyRespawns();
         player->update();
@@ -156,6 +164,15 @@ void Program::KeyInputs() {
     if (!gameOver && !paused && IsKeyPressed('I')) startup = !startup;
     if (IsKeyPressed('H')) HitBox::drawHitbox = !HitBox::drawHitbox;
     
+     if (IsKeyPressed('K')) {
+        score += 500;
+
+        if (score >= sumLife && lives < 5){
+            lives += 1;
+            sumLife += 1000;
+        }
+    }
+
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
         gameOver = false;
         Reset();
@@ -190,6 +207,9 @@ void Program::Reset() {
     count = 0;
     delay = 0;
     lives = 3;
+    score = 0;
+    sumLife = 1000;
+
     for (int i = 0; i < 30; i++) {
         float x = 250 + 50 * (i%10);
         float y = 200 + 50 * (i/10);
