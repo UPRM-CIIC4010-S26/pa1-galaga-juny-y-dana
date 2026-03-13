@@ -36,7 +36,9 @@ void Program::Update() {
 
     if (!startup && !paused && !gameOver && pauseFrames <= 0) {
         score += Enemy::ManageEnemies(player->hitBox);
-
+        if (score > highScore) {
+            highScore = score;
+        }
         if (score >= sumLife && lives < 5) {
         lives++;
         sumLife += 1000;
@@ -78,6 +80,13 @@ void Program::Update() {
 
 void Program::Draw() {
     background.Draw();
+
+     std::string scoreText = "Score: " + std::to_string(score);
+    DrawText(scoreText.c_str(), 10, 10, 24, WHITE);
+
+    std::string highScoreText = "High Score: " + std::to_string(highScore);
+    DrawText(highScoreText.c_str(), GetScreenWidth() - 220, 10, 24, WHITE);
+    
     if (pauseFrames <= 0 && !gameOver) player->draw();
     for (Animation& a : Animation::animations) a.draw();
 
