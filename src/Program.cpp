@@ -42,7 +42,6 @@ void Program::Update() {
         sumLife += 1000;
         }
         
-        respawnCooldown = std::max(1080 - score / 5, 200);
 
         StdEnemy::attackReset();
         ManageEnemyRespawns();
@@ -82,19 +81,20 @@ void Program::Draw() {
     if (pauseFrames <= 0 && !gameOver) player->draw();
     for (Animation& a : Animation::animations) a.draw();
 
-    for (int i = 0; i < lives; i++) {
-         DrawTexturePro(ImageManager::SpriteSheet, Rectangle{0, 0, 17, 18}, 
-                   Rectangle{10.0f + i * 30, GetScreenHeight() - 30.0f, 20, 20}, 
-                   Vector2{0, 0}, 0, WHITE);
-    }
-
-
     for (Projectile p : Projectile::projectiles) p.draw();
     for (std::pair<std::pair<float, float>, Enemy*>& p : Enemy::enemies) if (p.second) p.second->draw();
 
     if (startup) DrawStartup();
     if (paused) DrawPauseScreen();
     if (gameOver) DrawGameOver();
+
+     
+    for (int i = 0; i < lives; i++) {
+         DrawTexturePro(ImageManager::SpriteSheet, Rectangle{0, 0, 17, 18}, 
+                   Rectangle{10.0f + i * 30, GetScreenHeight() - 80.0f, 20, 20}, 
+                   Vector2{0, 0}, 0, WHITE);
+         
+    }
 }
 
 void Program::ManageEnemyRespawns() {
@@ -102,7 +102,7 @@ void Program::ManageEnemyRespawns() {
 
     respawnCooldown -= 1;
     if (respawnCooldown <= 0) {
-        respawnCooldown = 1080;
+        respawnCooldown = std::max(1080 - score / 5, 200);
         for (std::pair<std::pair<float, float>, Enemy*>& p : Enemy::enemies) {
             if (!p.second && p.first.second != 150) {
                 int eType = GetRandomValue(1, 3);
